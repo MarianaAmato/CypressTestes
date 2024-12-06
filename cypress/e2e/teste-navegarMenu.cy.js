@@ -95,7 +95,6 @@ describe('Navegando no Painel', () => {
         cy.get(':nth-child(5) > .MuiButtonBase-root').click()
         cy.contains('Agendas') .click()
         cy.location('pathname').should('equal', '/agendas')
-          
       
     }) 
        
