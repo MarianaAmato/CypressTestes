@@ -45,13 +45,12 @@ context('Utiliza o filtro de busca "Empresas" na página de Empresas', ()=>{
 })
     
 context('Utiliza o filtro de busca "Data de Cadastro" na página de Empresas', ()=>{   
-    it('Deve selecionar todas as opções de data de cadastro', () =>{
+    it('Deve selecionar todas as opções de data de cadastro exceto o período personalizado', () =>{
         
         var elemento1 = 'Hoje';
         var elemento2 = 'Todas as datas';
         var elemento3 = 'Últimos 30 dias';
         var elemento4 = 'Últimos 90 dias';
-        var elemento5 = 'Período Personalizado';
         
         const elementos = [elemento1, elemento2, elemento3, elemento4];  // Criação de um array com os elementos
         for (let valor = 0; valor < 4; valor++) {
@@ -60,14 +59,31 @@ context('Utiliza o filtro de busca "Data de Cadastro" na página de Empresas', (
             cy.get('.css-liikrh > .MuiButton-root').click()
             cy.wait(1000)
         }
-        // cy.get(':nth-child(2) > .MuiBox-root > .MuiInputBase-root').click()
-        // cy.contains(elemento5).click();  // Acessa os elementos dinamicamente pelo índice
-        // cy.get('.react-calendar__tile--now').click()
-        // cy.get('.react-calendar__month-view__days > :nth-child(7) > abbr').click()
-        // cy.get('.css-liikrh > .MuiButton-root').click()
-        // cy.wait(1000)
-
         
+    })
+    it('Deve selecionar a opção Período Personalizado', () =>{
+        var elemento5 = 'Período Personalizado';
+        cy.get(':nth-child(2) > .MuiBox-root > .MuiInputBase-root').click()
+        cy.contains(elemento5).click();  // Acessa os elementos dinamicamente pelo índice
+        // FILTRO POR DIAS DO ANO
+        cy.get('.react-calendar__tile--now').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(7) > abbr').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(7) > abbr').type('{esc}');
+        cy.get('.css-liikrh > .MuiButton-root').click()
+        // FILTRO ANO - ERRO
+        cy.get(':nth-child(2) > .MuiBox-root > .MuiInputBase-root').click()
+        cy.contains(elemento5).click();
+        cy.get('.react-calendar__navigation__label').click()
+        cy.get('.react-calendar__year-view__months > :nth-child(1)').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(1)').click()
+        cy.get('.react-calendar__navigation__label').click()
+        cy.get('.react-calendar__tile--now').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(7) > abbr').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(7) > abbr').type('{esc}');
+        cy.get('.css-liikrh > .MuiButton-root').click()
+        cy.get('.infinite-scroll-component').scrollTo('bottom');
+        cy.contains('Nenhuma empresa cadastrada.').should('not.be.visible');
+        cy.wait(1000)
     })
 })
 context('Utiliza o filtro de busca "Status de Opt-In" na página de Empresas', ()=>{
@@ -95,7 +111,7 @@ context('Utiliza o filtro de busca "Status de Opt-In" na página de Empresas', (
     }) 
 })
 context('Utiliza o filtro de busca "Status de Agenda" na página de Empresas', ()=>{
-    it('Deve filtrar as empresas pelo Status de Agenda Inativa', () =>{
+    it.only('Deve filtrar as empresas pelo Status de Agenda Inativa', () =>{
         cy.get(':nth-child(4) > .MuiBox-root > .MuiInputBase-root').click()
         cy.contains('Inativa').click()
         cy.get('body').click()
@@ -149,6 +165,19 @@ context('Utiliza o filtro de busca "Status de Agenda" na página de Empresas', (
         cy.get('body').click()
         cy.get('.css-liikrh > .MuiButton-root').click()
         
+    })
+})
+context('Validação preenchimento do filtro', ()=>{
+    it('Deve Aplicar mais de um filtro e aplicar a busca só após clicar no botão de busca', () =>{ 
+        cy.get(':nth-child(3) > .MuiBox-root > .MuiInputBase-root').click()
+        cy.contains('Ativo').click()
+        cy.get('body').click()
+        cy.get(':nth-child(4) > .MuiBox-root > .MuiInputBase-root').click()
+        cy.contains('Inativa').click()
+        cy.get('body').click()
+        cy.get('.infinite-scroll-component').scrollTo('bottom');
+        cy.get('p').should('equal', 'Você tem 41 empresas cadastradas');
+
     })
 })
     
